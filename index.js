@@ -1,5 +1,17 @@
-const { Client, GatewayIntentBits, EmbedBuilder, Partials, ChannelType} = require('discord.js');
-require('dotenv').config(); // Use environment variables for security
+import { Client, GatewayIntentBits, EmbedBuilder, Partials, ChannelType} from 'discord.js';
+import 'dotenv/config'
+
+import Uwuifier from "uwuifier";
+
+const uwuifier = new Uwuifier({
+    spaces: {
+        faces: 0.5,
+        actions: 0.125,
+        stutters: 0.2,
+    },
+    words: 1,
+    exclamations: 1,
+});
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages], partials: [Partials.Channel] });
 
@@ -149,6 +161,13 @@ client.on('messageCreate', async (message) => {
                 message.channel.send({ embeds: [resourceEmbed] });
                 break;
 
+            case 'uwu':
+                if(args.length <= 0) {
+                    return message.reply('You gotta say something...');
+                }
+                message.reply(uwuifier.uwuifySentence(args.join(' ')));
+                break;
+
             default:
                 message.reply("I don't recognize that command! Try `!help` for a list of commands.");
         }
@@ -157,6 +176,15 @@ client.on('messageCreate', async (message) => {
         // React with a trans emoji
         try {
             message.react('🏳️‍⚧️');
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    if(message.content.toLowerCase().includes('lesbians')) {
+        // React with a trans emoji
+        try {
+            message.react('lesbian_heart:1314295118366244875');
         } catch (error) {
             console.log(error);
         }
