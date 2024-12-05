@@ -1,7 +1,7 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, Partials, ChannelType} = require('discord.js');
 require('dotenv').config(); // Use environment variables for security
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages], partials: [Partials.Channel] });
 
 const PREFIX = "!";
 
@@ -13,7 +13,7 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
-    if (message.channel.type === 'DM') {
+    if (message.channel.type === ChannelType.DM) {
         const ventingChannel = client.channels.cache.find(channel => channel.name === '⚠venting');
 
         if (!ventingChannel) {
