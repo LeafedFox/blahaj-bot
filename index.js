@@ -13,6 +13,24 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
+    if (message.channel.type === 'DM') {
+        const ventingChannel = client.channels.cache.find(channel => channel.name === '⚠venting');
+
+        if (!ventingChannel) {
+            return message.author.send('The #venting channel does not exist on the server. Please ask a moderator to set it up.');
+        }
+
+        // Forward the DM to the #venting channel anonymously
+        try {
+            await ventingChannel.send(`**Anonymous Vent:**\n${message.content}`);
+            await message.author.send('Your message has been sent anonymously to the #venting channel. ❤️');
+        } catch (error) {
+            console.error(error);
+            await message.author.send('I encountered an error while sending your message. Please try again later.');
+        }
+        return;
+    }
+
     if (message.content.startsWith(PREFIX)) {
         const args = message.content.slice(PREFIX.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
