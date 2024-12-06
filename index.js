@@ -56,7 +56,7 @@ client.on('messageCreate', async (message) => {
                     .addFields(
                         { name: '!help', value: 'Display this help message' },
                         { name: '!pronouns [your pronouns]', value: 'Set your pronouns and assign a role' },
-                        { name: '!color [hex code]', value: 'Choose a custom color role or create one' },
+                        { name: '!colour [hex code]', value: 'Choose a custom color role or create one' },
                         { name: '!resources', value: 'Get a list of transgender resources' }
                     )
                     .setFooter({ text: 'We love you and support you!' });
@@ -76,7 +76,6 @@ client.on('messageCreate', async (message) => {
                     try {
                         role = await message.guild.roles.create({
                             name: pronouns,
-                            color: 'RANDOM',
                             mentionable: true
                         });
                         message.channel.send(`Created a new role for pronouns: **${pronouns}**.`);
@@ -96,7 +95,7 @@ client.on('messageCreate', async (message) => {
                 }
                 break;
 
-            case 'color':
+            case 'colour':
                 const color = args[0];
                 const colorRegex = /^#([0-9A-F]{3}){1,2}$/i;
 
@@ -108,6 +107,7 @@ client.on('messageCreate', async (message) => {
 
                 // Check if a role for the color already exists
                 let colorRole = message.guild.roles.cache.find(r => r.name === normalizedColorName);
+                const memberRole = message.guild.roles.cache.find(role => role.id === '1312915608911745091'); // Find the "member" role
 
                 // Create the role if it doesn't exist
                 if (!colorRole) {
@@ -117,12 +117,16 @@ client.on('messageCreate', async (message) => {
                             color: color,
                             mentionable: false
                         });
+                        if(memberRole) {
+                            colorRole.setPosition(memberRole.position + 1);
+                        }
                         message.channel.send(`Created a new color role: **${normalizedColorName}**.`);
                     } catch (error) {
                         console.error(error);
                         return message.reply('I couldn’t create the color role. Please ensure I have the `Manage Roles` permission.');
                     }
                 }
+                const member = message.member;
 
                 const existingColorRoles = member.roles.cache.filter(r => r.name.startsWith('Color:'));
                 try {
