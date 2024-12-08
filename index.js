@@ -56,7 +56,7 @@ client.on('messageCreate', async (message) => {
                     .addFields(
                         { name: '!help', value: 'Display this help message' },
                         { name: '!pronouns [your pronouns]', value: 'Set your pronouns and assign a role' },
-                        { name: '!colour [hex code]', value: 'Choose a custom color role or create one' },
+                        { name: '!colour [hex code]', value: 'Choose a custom colour role or create one' },
                         { name: '!resources', value: 'Get a list of transgender resources' }
                     )
                     .setFooter({ text: 'We love you and support you!' });
@@ -100,7 +100,7 @@ client.on('messageCreate', async (message) => {
                 const colorRegex = /^#([0-9A-F]{3}){1,2}$/i;
 
                 if (!color || !colorRegex.test(color)) {
-                    return message.reply('Please provide a valid hex color code. Example: `!color #FF5733`');
+                    return message.reply('Please provide a valid hex color code. Example: `!colour #FF5733`');
                 }
 
                 const normalizedColorName = `Color: ${color.toUpperCase()}`;
