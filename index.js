@@ -26,7 +26,7 @@ client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
     if (message.channel.type === ChannelType.DM) {
-        const ventingChannel = client.channels.cache.find(channel => channel.name === '⚠venting');
+        const ventingChannel = client.channels.cache.find(channel => channel.id === '1312915609817845918');
 
         if (!ventingChannel) {
             return message.author.send('The #venting channel does not exist on the server. Please ask a moderator to set it up.');
