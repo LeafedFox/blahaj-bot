@@ -13,7 +13,7 @@ const uwuifier = new Uwuifier({
     exclamations: 1,
 });
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages], partials: [Partials.Channel] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildVoiceStates], partials: [Partials.Channel] });
 
 const PREFIX = "!";
 
@@ -194,6 +194,53 @@ client.on('messageCreate', async (message) => {
         }
     }
 });
+
+const cooldowns = new Map();
+
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    // Ignore bot accounts
+    if (newState.member.user.bot) return;
+
+    // Check if the member joined a voice channel
+    if (!oldState.channel && newState.channel) {
+        const voiceChannel = newState.channel;
+
+        // Check if they are the only member in the voice channel
+        if (voiceChannel.members.size === 1) {
+            const generalChannel = newState.guild.channels.cache.find(channel => channel.id === process.env.GENERAL_ID && channel.isTextBased());
+
+            if (!generalChannel) {
+                console.log('General text channel not found.');
+                return;
+            }
+
+            // Cooldown check
+            const cooldownKey = `${newState.guild.id}-${newState.member.id}`;
+            const cooldownTime = 60000; // Cooldown time in milliseconds (e.g., 1 minute)
+
+            if (cooldowns.has(cooldownKey)) {
+                const lastTimestamp = cooldowns.get(cooldownKey);
+                if (Date.now() - lastTimestamp < cooldownTime) {
+                    return; // Skip if still in cooldown
+                }
+            }
+
+            // Update cooldown
+            cooldowns.set(cooldownKey, Date.now());
+            setTimeout(() => cooldowns.delete(cooldownKey), cooldownTime);
+
+            // Send the message
+            try {
+                await generalChannel.send(
+                    `<@${newState.member.user.id}> just joined <#${voiceChannel.id}> and is currently all alone. 😢\n<@&${process.env.VC_PING_ID}> Give them some love.`
+                );
+            } catch (error) {
+                console.error('Failed to send message in general channel:', error);
+            }
+        }
+    }
+});
+
 
 
 client.login(process.env.TOKEN); // Ensure you have your token in a .env file
